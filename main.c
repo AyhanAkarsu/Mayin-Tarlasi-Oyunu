@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MayinSayisi 8
 #define TabloBoyutu 10
 
-void AltTablo();
-void Tablo();
-void TabloPrint();
-void MayinYerlestir();
-void AltTabloPrint();
+void TabloOlustur(void);
+void AltTablo(void);
+void TabloPrint(void);
+void MayinYerlestir(void);
+void AltTabloPrint(void);
 int Oyun(int satir, int sutun);
+void durum1(int satir, int sutun);
 int durum = 1;
 
 char cTablo[TabloBoyutu][TabloBoyutu];
@@ -22,16 +24,20 @@ int main()
     AltTablo();
     MayinYerlestir();
     printf("********Mayin Tarlasi Oyunu***********\n");
-while(durum == 1)
-{
-TabloPrint();
-printf("\nSatir ve sutun sayisini giriniz: ");
-scanf("%d %d",&satir, &sutun);
-Oyun(satir, sutun);
-printf("%d",durum);
+    while (durum == 1)
+    {
+        TabloPrint();
+        printf("\nSatir ve sutun sayisini giriniz (1-8): ");
+        if (scanf("%d %d", &satir, &sutun) != 2)
+        {
+            printf("Gecersiz giris. Oyun sonlandirildi.\n");
+            break;
+        }
+        Oyun(satir, sutun);
+    }
+    return 0;
 }
-}
-void TabloOlustur()
+void TabloOlustur(void)
 {
     for(int i=1; i < TabloBoyutu-1; i++)
     {
@@ -48,7 +54,7 @@ void TabloOlustur()
         cTablo[i][TabloBoyutu-1] = '*';
     }
 }
-void AltTablo()
+void AltTablo(void)
 {
        for(int i=1; i < TabloBoyutu-1; i++)
         {
@@ -65,7 +71,7 @@ void AltTablo()
         alttablo[i][TabloBoyutu-1] = 1;
     }
 }
-void TabloPrint()
+void TabloPrint(void)
 {
     printf("  ");
     for(int i=1; i < TabloBoyutu-1; i++)
@@ -90,7 +96,7 @@ void TabloPrint()
         printf("%3d",i);
     }
 }
-void AltTabloPrint()
+void AltTabloPrint(void)
 {
         printf("  ");
     for(int i=1; i < TabloBoyutu-1; i++)
@@ -115,17 +121,18 @@ void AltTabloPrint()
         printf("%3d",i);
     }
 }
-void MayinYerlestir()
+void MayinYerlestir(void)
 {
     srand(time(NULL));
     int satir, sutun;
     for(int i=1; i <= MayinSayisi; i++)
     {
-        satir = 1 + rand()%TabloBoyutu;
-        sutun = 1 + rand()%TabloBoyutu;
+        satir = 1 + rand() % (TabloBoyutu - 2);
+        sutun = 1 + rand() % (TabloBoyutu - 2);
         if(alttablo[satir][sutun] == -1)
         {
             i--;
+            continue;
         }
         alttablo[satir][sutun] = -1;
         for(int k=-1; k <= 1; k++)
@@ -145,10 +152,18 @@ void MayinYerlestir()
 }
 int Oyun(int satir, int sutun)
 {
+    if (satir < 1 || satir >= TabloBoyutu - 1 ||
+        sutun < 1 || sutun >= TabloBoyutu - 1)
+    {
+        printf("Gecersiz koordinat. 1 ile 8 arasinda deger girin.\n");
+        return 0;
+    }
+
     if(alttablo[satir][sutun] == -1)
     {
-        printf("\nOyunu kaybetdiniz..\n");
+        printf("\nOyunu kaybettiniz.\n");
         AltTabloPrint();
+        durum = 0;
     }
     else if(alttablo[satir][sutun] > 0 && cTablo[satir][sutun] == '#')
     {
@@ -157,7 +172,7 @@ int Oyun(int satir, int sutun)
     else if(alttablo[satir][sutun] == 0 && cTablo[satir][sutun] == '#')
     {
          durum1(satir,sutun);
-    }
+    return 0;
 }
 void durum1(int satir, int sutun)
 {
